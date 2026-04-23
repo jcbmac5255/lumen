@@ -16,4 +16,14 @@ Turbo.config.forms.confirm = (data) => {
   return confirmDialogController.handleConfirm(data);
 };
 
+// Clear modal/drawer turbo-frames before Turbo snapshots the page so a
+// cached snapshot doesn't re-open the dialog when you navigate back.
+document.addEventListener("turbo:before-cache", () => {
+  document
+    .querySelectorAll('turbo-frame[id="modal"], turbo-frame[id="drawer"]')
+    .forEach((frame) => {
+      frame.innerHTML = "";
+    });
+});
+
 export { application };
