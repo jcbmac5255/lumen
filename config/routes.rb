@@ -96,7 +96,8 @@ Rails.application.routes.draw do
   end
 
   resources :bills
-  resources :bill_payments, only: %i[create destroy]
+  resources :bill_payments, only: :create
+  delete "bill_payments", to: "bill_payments#destroy"
 
   resources :family_merchants, only: %i[index new create edit update destroy]
 
