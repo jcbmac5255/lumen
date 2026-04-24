@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-STAMP=$(date -u +%Y-%m-%dT%H%M%SZ)
+STAMP=$(date +%Y-%m-%dT%H%M%S)
 FILE="maybe_production_${STAMP}.sql.gz"
 BUCKET="hetzner:maybe-finance"
 
