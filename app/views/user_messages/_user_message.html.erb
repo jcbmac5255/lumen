@@ -1,5 +1,22 @@
 <%# locals: (user_message:) %>
 
-<div id="<%= dom_id(user_message) %>" class="bg-surface-inset px-3 py-2 rounded-lg max-w-[85%] w-fit ml-auto mb-6">
-  <div class="prose prose--ai-chat"><%= markdown(user_message.content) %></div>
+<div id="<%= dom_id(user_message) %>" class="bg-surface-inset px-3 py-2 rounded-lg max-w-[85%] w-fit ml-auto mb-6 space-y-2">
+  <% if user_message.attachments.any? %>
+    <div class="flex flex-wrap gap-2">
+      <% user_message.attachments.each do |a| %>
+        <% if a.image? %>
+          <%= image_tag a, class: "max-w-[200px] max-h-[200px] rounded object-cover" %>
+        <% else %>
+          <div class="flex items-center gap-2 bg-container px-2 py-1.5 rounded text-xs">
+            <%= icon("file-text", size: "sm") %>
+            <span class="truncate max-w-[160px]"><%= a.filename %></span>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if user_message.content.present? %>
+    <div class="prose prose--ai-chat"><%= markdown(user_message.content) %></div>
+  <% end %>
 </div>

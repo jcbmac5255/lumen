@@ -4,11 +4,15 @@ class MessagesController < ApplicationController
   before_action :set_chat
 
   def create
-    @message = UserMessage.create!(
+    @message = UserMessage.new(
       chat: @chat,
       content: message_params[:content],
       ai_model: message_params[:ai_model]
     )
+    if message_params[:attachments].present?
+      @message.attachments.attach(message_params[:attachments])
+    end
+    @message.save!
 
     redirect_to chat_path(@chat, thinking: true)
   end
@@ -19,6 +23,6 @@ class MessagesController < ApplicationController
     end
 
     def message_params
-      params.require(:message).permit(:content, :ai_model)
+      params.require(:message).permit(:content, :ai_model, attachments: [])
     end
 end

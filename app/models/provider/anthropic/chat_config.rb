@@ -68,22 +68,72 @@ class Provider::Anthropic::ChatConfig
       chat.messages.ordered.each_with_object([]) do |msg, acc|
         case msg
         when UserMessage
-          acc << { role: "user", content: msg.content }
+          acc << { role: "user", content: user_content(msg) }
         when AssistantMessage
           next if msg.content.blank? && msg.tool_calls.empty?
-          blocks = []
-          blocks << { type: "text", text: msg.content } if msg.content.present?
-          msg.tool_calls.each do |tc|
-            next unless tc.is_a?(ToolCall::Function)
-            blocks << {
-              type: "tool_use",
-              id: tc.provider_id,
-              name: tc.function_name,
-              input: JSON.parse(tc.function_arguments.presence || "{}")
+
+          fn_calls = msg.tool_calls.select { |tc| tc.is_a?(ToolCall::Function) }
+
+          # Anthropic requires:
+          #   assistant: [tool_use, ...]
+          #   user: [tool_result, ...]
+          #   assistant: [final text]
+          # — text + tool_use can't share an assistant message without breaking the pairing.
+          if fn_calls.any?
+            acc << {
+              role: "assistant",
+              content: fn_calls.map do |tc|
+                {
+                  type: "tool_use",
+                  id: tc.provider_id,
+                  name: tc.function_name,
+                  input: JSON.parse(tc.function_arguments.presence || "{}")
+                }
+              end
+            }
+            acc << {
+              role: "user",
+              content: fn_calls.map do |tc|
+                {
+                  type: "tool_result",
+                  tool_use_id: tc.provider_id,
+                  content: tc.function_result.to_json
+                }
+              end
             }
           end
-          acc << { role: "assistant", content: blocks } if blocks.any?
+
+          if msg.content.present?
+            acc << { role: "assistant", content: [ { type: "text", text: msg.content } ] }
+          end
         end
+      end
+    end
+
+    # Build a user-message content array that includes any attached
+    # images/PDFs as Claude vision/document blocks, plus the text.
+    # Returns a plain string when there are no attachments (keeps the
+    # simple case readable).
+    def user_content(msg)
+      return msg.content unless msg.respond_to?(:attachments) && msg.attachments.attached?
+
+      blocks = msg.attachments.map { |a| attachment_block(a) }.compact
+      blocks << { type: "text", text: msg.content } if msg.content.present?
+      blocks.presence || msg.content
+    end
+
+    def attachment_block(att)
+      data = Base64.strict_encode64(att.download)
+      if att.content_type == "application/pdf"
+        {
+          type: "document",
+          source: { type: "base64", media_type: "application/pdf", data: data }
+        }
+      elsif att.content_type&.start_with?("image/")
+        {
+          type: "image",
+          source: { type: "base64", media_type: att.content_type, data: data }
+        }
       end
     end
 end

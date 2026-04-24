@@ -99,6 +99,8 @@ Rails.application.routes.draw do
   resources :bill_payments, only: :create
   delete "bill_payments", to: "bill_payments#destroy"
 
+  get "chat_mentions", to: "chat_mentions#index"
+
   resources :family_merchants, only: %i[index new create edit update destroy]
 
   resources :transfers, only: %i[new create destroy show update]

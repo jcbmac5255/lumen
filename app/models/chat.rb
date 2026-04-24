@@ -11,15 +11,17 @@ class Chat < ApplicationRecord
   scope :ordered, -> { order(created_at: :desc) }
 
   class << self
-    def start!(prompt, model:)
+    def start!(prompt, model:, attachments: nil)
+      msg = UserMessage.new(content: prompt, ai_model: model)
+      msg.attachments.attach(attachments) if attachments.present?
       create!(
-        title: generate_title(prompt),
-        messages: [ UserMessage.new(content: prompt, ai_model: model) ]
+        title: generate_title(prompt.presence || "Attachment"),
+        messages: [ msg ]
       )
     end
 
     def generate_title(prompt)
-      prompt.first(80)
+      prompt.to_s.first(80).presence || "New chat"
     end
   end
 
