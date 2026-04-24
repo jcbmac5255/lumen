@@ -101,7 +101,6 @@ module ApplicationHelper
       superscript: true,
       underline: true,
       highlight: true,
-      quote: true,
       footnotes: true
     )
 

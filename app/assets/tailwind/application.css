@@ -92,6 +92,15 @@
     @apply text-lg font-medium text-primary;
   }
 
+  code {
+    @apply text-primary bg-surface-inset rounded px-1 py-0.5 text-[0.9em] font-medium;
+  }
+
+  /* Tailwind typography adds pseudo-backticks around inline code — strip them. */
+  code::before, code::after {
+    content: "";
+  }
+
   li {
     @apply m-0 text-primary;
   }

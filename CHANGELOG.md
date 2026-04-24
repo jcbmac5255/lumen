@@ -5,8 +5,8 @@ All notable changes to this self-hosted fork are listed here. Newest versions go
 ## [0.10.0] - 2026-04-24
 
 ### Added
-- **`@mentions` in the AI chat** — type `@` to open a typeahead dropdown of your accounts, categories, and merchants. Selecting one inserts the name as plain text; the AI's existing tools resolve the reference.
-- **File attachments in the AI chat** — click the `+` button to attach images (PNG / JPEG / GIF / WebP) or PDFs to a message. Up to 5 files per message, 20MB each. Claude reads them natively (vision for images, built-in PDF support for documents).
+- **Chat @-mentions** — type **@** in the AI chat input to open a typeahead dropdown of your accounts, categories, and merchants. Selecting one inserts the name as plain text; the AI's existing tools resolve the reference.
+- **File attachments in the AI chat** — click the **+** button to attach images (PNG / JPEG / GIF / WebP) or PDFs to a message. Up to 5 files per message, 20MB each. Claude reads them natively (vision for images, built-in PDF support for documents).
 - **New Lumen logo** — replaced the gold "L" mark with a gradient green/teal/blue/purple "L" embedded with a bar chart. New login, nav, favicon, and PWA icon assets.
 - **Dark-background PWA icon** so the installed home-screen icon doesn't render on a white tile.
 
