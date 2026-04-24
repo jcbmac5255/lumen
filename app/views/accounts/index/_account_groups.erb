@@ -1,23 +1,33 @@
 <%# locals: (accounts:) %>
 
-<% accounts.group_by(&:accountable_type).sort_by { |group, _| group }.each do |group, accounts| %>
+<% accounts.group_by(&:accountable_type).sort_by { |group, _| group }.each do |group, accounts_in_group| %>
   <div class="bg-container-inset p-1 rounded-xl">
     <div class="flex items-center px-4 py-2 text-xs font-medium text-secondary">
       <p><%= Accountable.from_type(group).display_name %></p>
       <span class="text-subdued mx-2">&middot;</span>
-      <p><%= accounts.count %></p>
+      <p><%= accounts_in_group.count %></p>
 
-      <% unless accounts.any?(&:syncing?) %>
-        <p class="ml-auto"><%= totals_by_currency(collection: accounts, money_method: :balance_money) %></p>
+      <% unless accounts_in_group.any?(&:syncing?) %>
+        <p class="ml-auto"><%= totals_by_currency(collection: accounts_in_group, money_method: :balance_money) %></p>
       <% end %>
     </div>
-    <div class="bg-container rounded-lg shadow-border-xs">
-      <% accounts.each_with_index do |account, index| %>
-        <%= render account %>
-        <% unless index == accounts.count - 1 %>
-          <%= render "shared/ruler" %>
-        <% end %>
+    <ul class="bg-container rounded-lg shadow-border-xs list-none" data-controller="sortable-accounts">
+      <% sorted = accounts_in_group.sort_by { |a| [ a.display_order || 0, a.name ] } %>
+      <% sorted.each_with_index do |account, index| %>
+        <li data-sortable-accounts-target="item"
+            data-id="<%= account.id %>"
+            class="group/sortable cursor-grab active:cursor-grabbing">
+          <div class="flex items-center">
+            <span class="pl-3 text-secondary opacity-0 group-hover/sortable:opacity-100 transition-opacity" title="Drag to reorder">
+              <%= icon("grip-vertical", size: "sm") %>
+            </span>
+            <div class="flex-1"><%= render account %></div>
+          </div>
+          <% unless index == sorted.count - 1 %>
+            <%= render "shared/ruler" %>
+          <% end %>
+        </li>
       <% end %>
-    </div>
+    </ul>
   </div>
 <% end %>

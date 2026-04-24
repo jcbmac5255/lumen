@@ -1,4 +1,4 @@
-<details class="group" <%= "open" if open %>>
+<details class="group" <%= "open" if open %><% if memo_key %> data-controller="details-memo" data-details-memo-key-value="<%= memo_key %>"<% end %>>
   <%= tag.summary class: class_names(
     "px-3 py-2 rounded-xl cursor-pointer flex items-center justify-between bg-surface"
   ) do %>

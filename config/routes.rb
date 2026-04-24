@@ -172,6 +172,7 @@ Rails.application.routes.draw do
 
     collection do
       post :sync_all
+      patch :reorder
     end
   end
 

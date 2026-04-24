@@ -22,6 +22,7 @@ class Account < ApplicationRecord
   scope :assets, -> { where(classification: "asset") }
   scope :liabilities, -> { where(classification: "liability") }
   scope :alphabetically, -> { order(:name) }
+  scope :ordered, -> { order(:display_order, :name) }
   scope :manual, -> { where(plaid_account_id: nil) }
 
   has_one_attached :logo

@@ -3,10 +3,24 @@ class AccountsController < ApplicationController
   include Periodable
 
   def index
-    @manual_accounts = family.accounts.manual.alphabetically
+    @manual_accounts = family.accounts.manual.ordered
     @plaid_items = family.plaid_items.ordered
 
     render layout: "settings"
+  end
+
+  def reorder
+    ids = Array(params[:ids]).map(&:to_s)
+    now = Time.current
+    Account.transaction do
+      ids.each_with_index do |id, idx|
+        family.accounts.where(id: id).update_all(
+          display_order: (idx + 1) * 10,
+          updated_at: now
+        )
+      end
+    end
+    head :ok
   end
 
   def sync_all
