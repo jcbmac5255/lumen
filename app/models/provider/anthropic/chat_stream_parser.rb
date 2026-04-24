@@ -35,11 +35,15 @@ class Provider::Anthropic::ChatStreamParser
   def finalize
     text = blocks_of(:text).map { |b| b[:text] }.join
     function_requests = blocks_of(:tool_use).map do |b|
+      # Tools with no inputs produce no input_json_delta events, leaving input_json empty.
+      # Default to "{}" so downstream JSON.parse doesn't choke.
+      args = b[:input_json].to_s
+      args = "{}" if args.empty?
       ChatFunctionRequest.new(
         id: b[:id],
         call_id: b[:id],
         function_name: b[:name],
-        function_args: b[:input_json]
+        function_args: args
       )
     end
 

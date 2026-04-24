@@ -20,6 +20,28 @@ class Provider::Anthropic::ChatConfig
     history = build_history
 
     if function_results.any?
+      # If the current in-flight assistant message isn't persisted yet
+      # (Claude called a tool as its first response, before any text),
+      # synthesize its tool_use turn from the function_results data so
+      # Anthropic sees a matching tool_use for every tool_result.
+      last = history.last
+      needs_synth = last.nil? || last[:role] != "assistant" ||
+                    !Array(last[:content]).any? { |b| b.is_a?(Hash) && b[:type] == "tool_use" }
+
+      if needs_synth
+        history << {
+          role: "assistant",
+          content: function_results.map do |r|
+            {
+              type: "tool_use",
+              id: r[:call_id],
+              name: r[:function_name],
+              input: JSON.parse(r[:function_arguments].presence || "{}")
+            }
+          end
+        }
+      end
+
       history << {
         role: "user",
         content: function_results.map do |r|

@@ -6,7 +6,7 @@ set -euo pipefail
 
 STAMP=$(date +%Y-%m-%dT%H%M%S)
 FILE="maybe_production_${STAMP}.sql.gz"
-BUCKET="hetzner:maybe-finance"
+BUCKET="hetzner:lumen-finance"
 
 cd /opt/maybe
 
