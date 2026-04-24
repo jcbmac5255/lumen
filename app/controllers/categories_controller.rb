@@ -16,6 +16,7 @@ class CategoriesController < ApplicationController
 
   def create
     @category = Current.family.categories.new(category_params)
+    @category.color ||= Category::COLORS.sample
 
     if @category.save
       @transaction.update(category_id: @category.id) if @transaction
@@ -26,10 +27,16 @@ class CategoriesController < ApplicationController
       respond_to do |format|
         format.html { redirect_back_or_to categories_path, notice: t(".success") }
         format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, redirect_target_url) }
+        format.json { render json: { id: @category.id, name: @category.name, color: @category.color } }
       end
     else
-      set_categories
-      render :new, status: :unprocessable_entity
+      respond_to do |format|
+        format.json { render json: { errors: @category.errors.full_messages }, status: :unprocessable_entity }
+        format.any do
+          set_categories
+          render :new, status: :unprocessable_entity
+        end
+      end
     end
   end
 

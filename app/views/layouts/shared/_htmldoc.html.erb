@@ -30,8 +30,8 @@
       <%= turbo_stream_from Current.family %>
     <% end %>
 
-    <%= turbo_frame_tag "modal" %>
-    <%= turbo_frame_tag "drawer" %>
+    <%= turbo_frame_tag "modal", data: { turbo_permanent: true } %>
+    <%= turbo_frame_tag "drawer", data: { turbo_permanent: true } %>
 
     <%# Custom overrides for browser's confirm API  %>
     <%= render "layouts/shared/confirm_dialog" %>
