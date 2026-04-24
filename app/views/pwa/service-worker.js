@@ -1,7 +1,7 @@
 // Lumen service worker — caches static assets for fast repeat loads.
 // Bump CACHE_VERSION when shipping CSS/JS/image changes to bust old caches.
 
-const CACHE_VERSION = "lumen-v7";
+const CACHE_VERSION = "lumen-v8";
 const PRECACHE_URLS = [
   "/manifest",
   "/logo-pwa.png",
