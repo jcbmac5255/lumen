@@ -2,6 +2,32 @@
 
 All notable changes to this self-hosted fork are listed here. Newest versions go on top.
 
+## [0.10.0] - 2026-04-24
+
+### Added
+- **`@mentions` in the AI chat** — type `@` to open a typeahead dropdown of your accounts, categories, and merchants. Selecting one inserts the name as plain text; the AI's existing tools resolve the reference.
+- **File attachments in the AI chat** — click the `+` button to attach images (PNG / JPEG / GIF / WebP) or PDFs to a message. Up to 5 files per message, 20MB each. Claude reads them natively (vision for images, built-in PDF support for documents).
+- **New Lumen logo** — replaced the gold "L" mark with a gradient green/teal/blue/purple "L" embedded with a bar chart. New login, nav, favicon, and PWA icon assets.
+- **Dark-background PWA icon** so the installed home-screen icon doesn't render on a white tile.
+
+### Changed
+- **Public URL** is now https://lumen.nexgrid.cc (via Nginx Proxy Manager).
+- **Repo renamed** to jcbmac5255/lumen. In-app GitHub links (user menu, feedback, Redis error page) updated.
+- **Help button (?)** in the left nav now opens the Feedback page instead of trying to launch Intercom.
+- **README** and **CONTRIBUTING** rewritten for Lumen with attribution to the upstream Maybe Finance project.
+
+### Fixed
+- **AI assistant** tool-call flow: tools with no arguments (e.g. `get_accounts`) no longer crash the response, and conversation history now correctly interleaves `tool_use` → `tool_result` → final text for Anthropic's Messages API.
+- **Navigation flashes** from Turbo's cached-snapshot preview (added `turbo-cache-control: no-preview`). Bottom-nav Budgets link now points directly at the current month to avoid the 302 that caused a flash of another tab.
+- **Chat input** placeholder buttons that did nothing (upstream stubs) removed.
+
+### Infra
+- **Service worker** registered and actually caching static assets — previous worker was a commented stub. Cache-first for fingerprinted assets, network-first for HTML.
+- **Rails.cache** backed by Redis; dashboard sankey computation cached with transaction-update-time invalidation.
+- **Mobile PWA performance pass** — logo PNGs shrunk from ~190-350KB down to ~13-44KB (pngquant + resize), gzip enabled on the reverse proxy, Turbo-preload on nav items.
+- **Server timezone** set to America/New_York so backup filenames and logs match local clock.
+- **Hetzner bucket renamed** to `lumen-finance` and backup script updated to match.
+
 ## [0.9.0] - 2026-04-23
 
 ### Changed
