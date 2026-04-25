@@ -2,6 +2,27 @@
 
 All notable changes to this self-hosted fork are listed here. Newest versions go on top.
 
+## [0.11.0] - 2026-04-24
+
+### Added
+- **Passkey (biometric) sign-in** — register a passkey from Settings → Security and sign in with Face ID, Touch ID, fingerprint, or your device PIN instead of typing a password. Backed by WebAuthn (ES256 + RS256). Supports multiple passkeys per account so each device can have its own.
+- **Drag-reorder accounts** — grab any account row in Settings → Accounts to change the order. The home-screen sidebar reflects the new order within each group.
+- **Sidebar groups remember their open/closed state** in `localStorage`, so collapsing "Credit cards" once doesn't get undone every time you navigate.
+- **Create a new category inline** from the New Transaction modal (`+ New category` link under the Category select). No round-trip to Settings.
+
+### Changed
+- **Invitation emails now send for real** in self-hosted mode. Previously the upstream code skipped the mailer in self-hosted; it now goes through Resend (or whatever SMTP you have configured). The button styles are inlined so Gmail's style-strip doesn't render the link as plain text, and a copy-paste fallback URL is included as a backup.
+- **Pending-invitation row** restructured to stack on mobile so the invitation-link input doesn't blow past the viewport.
+- **Help (`?`) button in the left nav** now opens the Feedback page (was wired to Intercom, which isn't configured in self-hosted).
+
+### Fixed
+- **Invitation link input** in household settings was rendering white-on-white in dark mode — now uses design-token colors that adapt to the theme.
+- **Inline code spans** on the in-app Changelog page were invisible against the dark background — added explicit `text-primary` / `bg-surface-inset` styling.
+- **Pull-to-refresh** experiment in the mobile PWA was over-sensitive; disabled for now (controller left in repo for a future revisit).
+
+### Infra
+- DB-level uniqueness on `(family_id, LOWER(name))` for categories — prevents duplicates if two household members try to create the same category at exactly the same moment.
+
 ## [0.10.0] - 2026-04-24
 
 ### Added
