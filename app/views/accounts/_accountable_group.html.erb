@@ -28,7 +28,8 @@
                     "block flex items-center gap-2 px-3 py-2 rounded-lg",
                     page_active?(account_path(account)) ? "bg-container" : "hover:bg-surface-hover"
                   ),
-                  title: account.name do %>
+                  title: account.name,
+                  data: { account_sidebar_target: "link" } do %>
           <%= render "accounts/logo", account: account, size: "sm", color: account_group.color %>
 
           <div class="min-w-0 grow">

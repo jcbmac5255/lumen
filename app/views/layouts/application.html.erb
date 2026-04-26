@@ -82,7 +82,7 @@
       <% if content_for?(:sidebar) %>
         <%= yield :sidebar %>
       <% else %>
-        <div class="h-full flex flex-col">
+        <div id="default-account-sidebar" data-turbo-permanent data-controller="account-sidebar" data-account-sidebar-version-value="<%= Current.family.accounts.maximum(:updated_at)&.to_i %>" class="h-full flex flex-col">
           <div class="overflow-y-auto grow">
             <%= render "accounts/account_sidebar_tabs", family: Current.family, active_tab: @account_group_tab %>
           </div>
