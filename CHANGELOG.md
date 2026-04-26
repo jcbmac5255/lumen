@@ -2,7 +2,7 @@
 
 All notable changes to this self-hosted fork are listed here. Newest versions go on top.
 
-## [0.12.0] - 2026-04-25
+## [0.12.0] - 2026-04-26
 
 ### Added
 - **Insights page** at `/insights` with a period selector (7D / 30D / MTD / 90D / YTD / 365D). Sections include:
