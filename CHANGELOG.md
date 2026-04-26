@@ -2,6 +2,33 @@
 
 All notable changes to this self-hosted fork are listed here. Newest versions go on top.
 
+## [0.12.0] - 2026-04-25
+
+### Added
+- **Insights page** at `/insights` with a period selector (7D / 30D / MTD / 90D / YTD / 365D). Sections include:
+  - **AI narrative** — Claude generates a 2-4 sentence summary of the period (lazy-loaded, cached 6h, ~$0.001/generation on Haiku).
+  - **KPI cards**: Income, Expenses, Net, Savings rate — each with a vs-prior-period delta (↑/↓ %).
+  - **Last 12 months** side-by-side income vs expense bar chart.
+  - **Spending velocity** projection on in-progress periods (Current Month / Current Year): "you're on pace for $X by month end".
+  - **Income source diversity** plain-English summary (single / concentrated / diversified).
+  - **Income & Expenses by category** with bars + percentages, clickable to drill into the filtered transactions list for that category and date range.
+  - **Spending by day of week** column chart.
+  - **Largest transactions** (top 10 by absolute amount).
+  - **Bills coverage** (uses Bills tracker — what % of expenses are recurring bills).
+  - **Recurring detection** (merchants with 3+ similar-amount transactions in the last 90 days, with monthly-cost estimate).
+  - **Unusual spending** (transactions ≥3× their category's 90-day median).
+  - **Top merchants** + **cashflow by account**.
+- **Insights** added to the bottom-nav and desktop sidebar.
+
+### Changed
+- **Transfer transactions can now be selected** for bulk-delete (and deleting one side now cascades to the other automatically — see below).
+- **Application directory** renamed `/opt/maybe` → `/opt/lumen` on the host. Systemd units, backup script, and bin/deploy updated to match. The Ruby `Maybe` module name and database (`maybe_production`) stay for internal continuity.
+
+### Fixed
+- **Deleting one side of a transfer** now also deletes the matching transaction on the other account, and resyncs that account's balance immediately. Previously the partner row was orphaned and balances drifted until you hit the manual refresh button.
+- **Turbo Drive's blue progress bar** is now hidden globally — was the brief blue line at the top during navigations.
+- **WebAuthn config deprecation** — switched from `config.origin = ...` to `config.allowed_origins = [ ... ]`.
+
 ## [0.11.0] - 2026-04-24
 
 ### Added
