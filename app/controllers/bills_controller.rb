@@ -51,7 +51,7 @@ class BillsController < ApplicationController
     end
 
     def bill_params
-      params.require(:bill).permit(:name, :amount, :due_day, :category_id, :paid_from_account_id, :notes, :active)
+      params.require(:bill).permit(:name, :amount, :due_day, :category_id, :paid_from_account_id, :paid_to_account_id, :notes, :active)
     end
 
     def parse_period(param)

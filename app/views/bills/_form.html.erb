@@ -17,6 +17,10 @@
           Current.family.accounts.visible.where(accountable_type: %w[Depository CreditCard]).alphabetically,
           :id, :name,
           { include_blank: "None (track manually)", label: "Paid from account (optional)", hint: "When marked paid, creates a transaction on this account" } %>
+    <%= f.collection_select :paid_to_account_id,
+          Current.family.accounts.visible.where(accountable_type: %w[Loan CreditCard OtherLiability]).alphabetically,
+          :id, :name,
+          { include_blank: "None", label: "Pays toward debt account (optional)", hint: "Set this to pay down a loan or credit card. Marking paid creates a linked transfer between the two accounts." } %>
     <%= f.text_area :notes, label: "Notes (optional)", rows: 3, placeholder: "Account number, payment URL, etc." %>
   </section>
 
