@@ -114,6 +114,17 @@ class BillTest < ActiveSupport::TestCase
     assert_nil Entry.find_by(id: entry_id)
   end
 
+  test "deleting the linked entry removes the bill payment marker" do
+    @bill.update!(paid_from_account: @checking)
+    payment = @bill.mark_paid!(Date.current)
+
+    assert_difference [ "Entry.count", "BillPayment.count" ], -1 do
+      payment.entry.destroy!
+    end
+
+    assert_not @bill.reload.paid?(Date.current)
+  end
+
   test "destroying the bill removes both legs of transfer payments" do
     @bill.update!(paid_from_account: @checking, paid_to_account: @credit_card)
     payment = @bill.mark_paid!(Date.current)

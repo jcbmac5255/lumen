@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_05_02_091552) do
+ActiveRecord::Schema[7.2].define(version: 2026_05_02_095601) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -881,7 +881,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_02_091552) do
   add_foreign_key "api_keys", "users"
   add_foreign_key "balances", "accounts", on_delete: :cascade
   add_foreign_key "bill_payments", "bills"
-  add_foreign_key "bill_payments", "entries"
+  add_foreign_key "bill_payments", "entries", on_delete: :cascade
   add_foreign_key "bills", "accounts", column: "paid_from_account_id"
   add_foreign_key "bills", "accounts", column: "paid_to_account_id"
   add_foreign_key "bills", "categories"
