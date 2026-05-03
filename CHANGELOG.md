@@ -2,6 +2,20 @@
 
 All notable changes to this self-hosted fork are listed here. Newest versions go on top.
 
+## [0.13.0] - 2026-05-03
+
+### Added
+- **Bills can pay down debt accounts.** A bill can now target a Loan, Credit Card, or Other Liability as its "Pays toward" account. When marked paid with both a paid-from (asset) and a paid-to (debt) account, marking it paid creates a linked transfer pair: an outflow on the source and an inflow on the debt, with the right `cc_payment` / `loan_payment` kind so analytics treat it correctly.
+- **Self-Hosting settings page** now has an AI assistant section to set the Anthropic and OpenAI API keys from the UI. Values entered here override the matching env var; clearing falls back to the env var if one is set. (Anthropic takes precedence when both are set.)
+
+### Changed
+- **Account sidebar persists across navigations** so the account list no longer flashes / re-fetches on every page change. The sidebar invalidates itself when accounts actually change (via a version stamp on the persisted DOM node), so additions/renames/reorders still show up.
+
+### Fixed
+- **Deleting a bill that's been marked paid** now cleans up the linked ledger entries on both the source and destination accounts. For transfer-style payments the partner leg is removed via the existing Transferable cascade.
+- **Deleting the transaction directly from an account view** (instead of unmarking the bill) used to fail with a 500 because of the FK from `bill_payments` → `entries`. The FK is now `ON DELETE CASCADE`, so deleting the entry removes the BillPayment marker too — the bill reverts to "unpaid" for that period.
+- **Sparkline timeouts on the accounts list** after a sync. The per-account sparkline cache key was family-wide, so any sync to any account busted every sparkline at once and stampeded the request pool. The cache key is now per-account (busts only when that account's data changes), and the client-side fallback timeout is 30s (was 10s).
+
 ## [0.12.0] - 2026-04-26
 
 ### Added
