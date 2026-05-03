@@ -64,7 +64,7 @@ All notable changes to this self-hosted fork are listed here. Newest versions go
 - **Mobile PWA performance pass** — logo PNGs shrunk from ~190-350KB down to ~13-44KB (pngquant + resize), gzip enabled on the reverse proxy, Turbo-preload on nav items.
 - **Hetzner bucket renamed** to `lumen-finance` and backup script updated to match.
 
-## [0.9.0] - 2026-04-23
+## [0.10.0] - 2026-04-23
 
 ### Added
 - **Bills tracker** — new Bills page with a monthly calendar view showing bills due and their paid status (paid / overdue / upcoming).
