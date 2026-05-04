@@ -6,6 +6,7 @@ All notable changes to this self-hosted fork are listed here. Newest versions go
 
 ### Added
 - **Bills can pay down debt accounts.** A bill can now target a Loan, Credit Card, or Other Liability as its "Pays toward" account. When marked paid with both a paid-from (asset) and a paid-to (debt) account, marking it paid creates a linked transfer pair: an outflow on the source and an inflow on the debt, with the right `cc_payment` / `loan_payment` kind so analytics treat it correctly.
+- **Bill frequency.** Bills now support weekly, biweekly, monthly, quarterly, semi-annual, and annual cadences. The form has a frequency dropdown plus a "First / next due date" picker (replaces day-of-month). Each cycle is its own paid/unpaid unit — weekly bills show 4–5 rows per month, quarterly/annual bills only appear in their cycle months — and the Insights "Bills coverage" calc normalizes amounts to a per-month figure so non-monthly bills don't skew the percentage.
 - **Self-Hosting settings page** now has an AI assistant section to set the Anthropic and OpenAI API keys from the UI. Values entered here override the matching env var; clearing falls back to the env var if one is set. (Anthropic takes precedence when both are set.)
 
 ### Changed
