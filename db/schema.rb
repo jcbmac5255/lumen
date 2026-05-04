@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_05_02_095601) do
+ActiveRecord::Schema[7.2].define(version: 2026_05_03_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -154,13 +154,14 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_02_095601) do
     t.string "name", null: false
     t.decimal "amount", precision: 19, scale: 4, null: false
     t.string "currency", null: false
-    t.integer "due_day", null: false
     t.text "notes"
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "paid_from_account_id"
     t.uuid "paid_to_account_id"
+    t.string "frequency", default: "monthly", null: false
+    t.date "anchor_date", null: false
     t.index ["category_id"], name: "index_bills_on_category_id"
     t.index ["family_id"], name: "index_bills_on_family_id"
     t.index ["paid_from_account_id"], name: "index_bills_on_paid_from_account_id"

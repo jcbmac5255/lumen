@@ -10,7 +10,8 @@ class BillPayment < ApplicationRecord
 
   private
     def normalize_period
-      self.period = period.beginning_of_month if period.present?
+      return if period.blank? || bill.blank?
+      self.period = bill.cycle_start_for(period)
     end
 
     def remove_linked_entry

@@ -156,7 +156,7 @@ class InsightsController < ApplicationController
       length_months = ((period.end_date - period.start_date).to_f + 1) / 30.0
       return nil if length_months < 0.1
 
-      monthly_bills = Current.family.bills.active.sum(:amount).to_f
+      monthly_bills = Current.family.bills.active.to_a.sum { |b| b.monthly_amount.to_f }
       bills_total = monthly_bills * length_months
       total_expenses = @expenses.total.to_f
       return nil if total_expenses.zero?

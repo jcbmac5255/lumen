@@ -1,8 +1,9 @@
-<%# locals: (bill:, period:, today:) %>
+<%# locals: (bill:, occurrence:, today:) %>
 
 <%
-  status = bill.status_for(period, today: today)
-  payment = bill.payment_for(period)
+  status = bill.status_for(occurrence, today: today)
+  payment = bill.payment_for(occurrence)
+  cycle_param = occurrence.strftime("%Y-%m-%d")
 
   status_pill = {
     paid: "text-green-700 theme-dark:text-green-400 bg-green-500/15",
@@ -11,9 +12,10 @@
   }[status]
 
   status_label = status.to_s.capitalize
+  row_id = "#{dom_id(bill)}_#{occurrence.strftime('%Y%m%d')}"
 %>
 
-<div id="<%= dom_id(bill) %>" class="flex items-center justify-between gap-3 p-3 bg-container rounded-lg shadow-border-xs">
+<div id="<%= row_id %>" class="flex items-center justify-between gap-3 p-3 bg-container rounded-lg shadow-border-xs">
   <div class="flex items-center gap-3 min-w-0">
     <% if bill.category %>
       <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
@@ -29,7 +31,7 @@
     <div class="min-w-0">
       <p class="text-sm font-medium text-primary truncate"><%= bill.name %></p>
       <p class="text-xs text-secondary">
-        Due <%= bill.due_date_for(period).strftime("%b %-d") %>
+        Due <%= occurrence.strftime("%b %-d") %>
         <% if status == :paid && payment %>
           · Paid <%= payment.paid_at.strftime("%b %-d") %>
         <% end %>
@@ -45,14 +47,14 @@
     </span>
 
     <% if status == :paid %>
-      <%= button_to bill_payments_path(bill_id: bill.id, period: period.strftime("%Y-%m")),
+      <%= button_to bill_payments_path(bill_id: bill.id, period: cycle_param),
             method: :delete,
             form: { class: "inline" },
             class: "text-xs font-medium text-secondary hover:text-primary px-2 py-1 rounded-md hover:bg-container-inset" do %>
         Unmark
       <% end %>
     <% else %>
-      <%= button_to bill_payments_path(bill_id: bill.id, period: period.strftime("%Y-%m")),
+      <%= button_to bill_payments_path(bill_id: bill.id, period: cycle_param),
             method: :post,
             form: { class: "inline" },
             class: "text-xs font-medium px-2 py-1 rounded-md bg-container-inset hover:bg-container-inset-hover text-primary" do %>

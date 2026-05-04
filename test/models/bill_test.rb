@@ -13,8 +13,59 @@ class BillTest < ActiveSupport::TestCase
       name: "Credit Card Payment",
       amount: 250,
       currency: "USD",
-      due_day: 15
+      anchor_date: Date.new(2026, 5, 15)
     )
+  end
+
+  test "monthly cycle_start_for is start of containing month" do
+    assert_equal Date.new(2026, 5, 1), @bill.cycle_start_for(Date.new(2026, 5, 22))
+    assert_equal Date.new(2026, 6, 1), @bill.cycle_start_for(Date.new(2026, 6, 1))
+  end
+
+  test "monthly occurrences yield one date per visible month" do
+    occurrences = @bill.occurrences_in(Date.new(2026, 5, 1)..Date.new(2026, 5, 31))
+    assert_equal [ Date.new(2026, 5, 15) ], occurrences
+
+    occurrences = @bill.occurrences_in(Date.new(2026, 5, 1)..Date.new(2026, 7, 31))
+    assert_equal [ Date.new(2026, 5, 15), Date.new(2026, 6, 15), Date.new(2026, 7, 15) ], occurrences
+  end
+
+  test "weekly bill yields four-or-five occurrences per month" do
+    weekly = @family.bills.create!(name: "Gym", amount: 20, currency: "USD",
+                                   frequency: "weekly", anchor_date: Date.new(2026, 5, 4))
+    occurrences = weekly.occurrences_in(Date.new(2026, 5, 1)..Date.new(2026, 5, 31))
+    assert_equal [ Date.new(2026, 5, 4), Date.new(2026, 5, 11),
+                   Date.new(2026, 5, 18), Date.new(2026, 5, 25) ], occurrences
+  end
+
+  test "biweekly cycle_start_for snaps to anchor + 14n" do
+    biweekly = @family.bills.create!(name: "Mortgage", amount: 800, currency: "USD",
+                                     frequency: "biweekly", anchor_date: Date.new(2026, 5, 1))
+    assert_equal Date.new(2026, 5, 15), biweekly.cycle_start_for(Date.new(2026, 5, 20))
+    assert_equal Date.new(2026, 5, 1),  biweekly.cycle_start_for(Date.new(2026, 5, 14))
+  end
+
+  test "quarterly bill only appears on its anchor cycle months" do
+    quarterly = @family.bills.create!(name: "Insurance", amount: 600, currency: "USD",
+                                      frequency: "quarterly", anchor_date: Date.new(2026, 3, 10))
+    assert_empty quarterly.occurrences_in(Date.new(2026, 5, 1)..Date.new(2026, 5, 31))
+    assert_equal [ Date.new(2026, 6, 10) ],
+                 quarterly.occurrences_in(Date.new(2026, 6, 1)..Date.new(2026, 6, 30))
+  end
+
+  test "annual bill only appears in its anchor month" do
+    annual = @family.bills.create!(name: "Domain", amount: 12, currency: "USD",
+                                   frequency: "annual", anchor_date: Date.new(2026, 8, 4))
+    assert_empty annual.occurrences_in(Date.new(2026, 5, 1)..Date.new(2026, 5, 31))
+    assert_equal [ Date.new(2026, 8, 4) ],
+                 annual.occurrences_in(Date.new(2026, 8, 1)..Date.new(2026, 8, 31))
+  end
+
+  test "monthly_amount normalizes to a per-month figure" do
+    weekly = @family.bills.new(amount: 10, frequency: "weekly")
+    annual = @family.bills.new(amount: 120, frequency: "annual")
+    assert_in_delta 43.33, weekly.monthly_amount, 0.01
+    assert_in_delta 10.00, annual.monthly_amount, 0.01
   end
 
   test "paid_to_account must be a liability" do
@@ -69,7 +120,7 @@ class BillTest < ActiveSupport::TestCase
     assert_difference "BillPayment.count", 1 do
       assert_difference "Entry.count", 1 do
         assert_no_difference "Transfer.count" do
-          @bill.mark_paid!(Date.current)
+          @bill.mark_paid!(Date.new(2026, 5, 15))
         end
       end
     end
@@ -78,7 +129,7 @@ class BillTest < ActiveSupport::TestCase
   test "mark_paid! without any account just records the payment" do
     assert_difference "BillPayment.count", 1 do
       assert_no_difference [ "Entry.count", "Transfer.count" ] do
-        @bill.mark_paid!(Date.current)
+        @bill.mark_paid!(Date.new(2026, 5, 15))
       end
     end
   end
@@ -96,7 +147,7 @@ class BillTest < ActiveSupport::TestCase
 
   test "unmark_paid! removes the single entry for non-transfer payments" do
     @bill.update!(paid_from_account: @checking)
-    @bill.mark_paid!(Date.current)
+    @bill.mark_paid!(Date.new(2026, 5, 15))
 
     assert_difference [ "BillPayment.count", "Entry.count" ], -1 do
       @bill.unmark_paid!(Date.current)

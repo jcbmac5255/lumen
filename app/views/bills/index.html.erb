@@ -36,10 +36,10 @@
   <div class="space-y-3">
     <h2 class="text-sm font-medium text-secondary">Bills this month</h2>
 
-    <% if @bills.any? %>
+    <% if @occurrences.any? %>
       <div class="space-y-2">
-        <% @bills.sort_by { |b| b.due_date_for(@period) }.each do |bill| %>
-          <%= render "bill", bill: bill, period: @period, today: Date.current %>
+        <% @occurrences.sort_by { |_bill, date| date }.each do |bill, occurrence| %>
+          <%= render "bill", bill: bill, occurrence: occurrence, today: Date.current %>
         <% end %>
       </div>
     <% else %>

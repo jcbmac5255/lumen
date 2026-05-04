@@ -8,7 +8,18 @@
   <section class="space-y-2">
     <%= f.text_field :name, label: "Name", placeholder: "e.g. Rent, Electric, Netflix", required: true, autofocus: bill.new_record? %>
     <%= f.money_field :amount, label: "Amount", required: true, default_currency: Current.family.currency, disable_currency: true %>
-    <%= f.number_field :due_day, label: "Due day of month", in: 1..31, step: 1, required: true %>
+    <%
+      frequency_options = [
+        [ "Weekly", "weekly" ],
+        [ "Biweekly (every 2 weeks)", "biweekly" ],
+        [ "Monthly", "monthly" ],
+        [ "Quarterly (every 3 months)", "quarterly" ],
+        [ "Semi-annual (every 6 months)", "semi_annual" ],
+        [ "Annual", "annual" ]
+      ]
+    %>
+    <%= f.select :frequency, frequency_options, { label: "Frequency", selected: bill.frequency || "monthly" }, required: true %>
+    <%= f.date_field :anchor_date, label: "First / next due date", required: true, hint: "For monthly bills the day-of-month is the recurring due day. For other frequencies, this is when the next occurrence falls." %>
     <%= f.collection_select :category_id,
           Current.family.categories.alphabetically,
           :id, :name,

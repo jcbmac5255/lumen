@@ -3,13 +3,20 @@ class BillsController < ApplicationController
 
   def index
     @period = parse_period(params[:period])
+    @period_range = @period..@period.end_of_month
     @bills = Current.family.bills.active.alphabetically.includes(:category, :bill_payments)
+    @occurrences = @bills.flat_map { |bill| bill.occurrences_in(@period_range).map { |date| [ bill, date ] } }
     @previous_period = (@period - 1.month).beginning_of_month
     @next_period = (@period + 1.month).beginning_of_month
   end
 
   def new
-    @bill = Current.family.bills.new(currency: Current.family.currency, active: true, due_day: Date.current.day)
+    @bill = Current.family.bills.new(
+      currency: Current.family.currency,
+      active: true,
+      frequency: "monthly",
+      anchor_date: Date.current
+    )
   end
 
   def create
@@ -51,7 +58,7 @@ class BillsController < ApplicationController
     end
 
     def bill_params
-      params.require(:bill).permit(:name, :amount, :due_day, :category_id, :paid_from_account_id, :paid_to_account_id, :notes, :active)
+      params.require(:bill).permit(:name, :amount, :frequency, :anchor_date, :category_id, :paid_from_account_id, :paid_to_account_id, :notes, :active)
     end
 
     def parse_period(param)

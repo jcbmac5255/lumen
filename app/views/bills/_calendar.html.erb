@@ -7,8 +7,11 @@
   grid_end = last_of_month + (6 - last_of_month.wday).days
   dates = (grid_start..grid_end).to_a
 
-  bills_by_date = bills.each_with_object({}) do |bill, hash|
-    (hash[bill.due_date_for(period)] ||= []) << bill
+  bills_by_date = Hash.new { |h, k| h[k] = [] }
+  bills.each do |bill|
+    bill.occurrences_in(first_of_month..last_of_month).each do |date|
+      bills_by_date[date] << bill
+    end
   end
 
   status_classes = {
@@ -58,7 +61,7 @@
           <%# Mobile: colored dots %>
           <div class="flex flex-wrap gap-0.5 justify-center sm:hidden">
             <% date_bills.each do |bill| %>
-              <% status = bill.status_for(period, today: today) %>
+              <% status = bill.status_for(date, today: today) %>
               <span class="w-1.5 h-1.5 rounded-full <%= dot_classes[status] %>"
                     title="<%= bill.name %> — <%= bill.amount_money.format %>"></span>
             <% end %>
@@ -67,7 +70,7 @@
           <%# Desktop: name pills %>
           <div class="hidden sm:block space-y-0.5">
             <% date_bills.each do |bill| %>
-              <% status = bill.status_for(period, today: today) %>
+              <% status = bill.status_for(date, today: today) %>
               <div class="text-[11px] leading-tight px-1.5 py-0.5 rounded truncate font-medium <%= status_classes[status] %>"
                    title="<%= bill.name %> — <%= bill.amount_money.format %> — <%= status.to_s.capitalize %>">
                 <%= bill.name %>
